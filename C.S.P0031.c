@@ -4,21 +4,21 @@
 
 void convertDecBin(int decimalNum)
 {
-    // create an array to store binary value
-    int binaryArray[64];
+  // create an array to store binary value
+  int binaryArray[64];
 
-    int i = 0, j;
-    while (decimalNum != 0)
-    {
-      // to store remainder in binary array
-      binaryArray[i] = decimalNum % 2;
-      decimalNum = decimalNum / 2;
-      i++;
-    }
+  int i = 0, j;
+  while (decimalNum != 0)
+  {
+    // to store remainder in binary array
+    binaryArray[i] = decimalNum % 2;
+    decimalNum = decimalNum / 2;
+    i++;
+  }
 
-    // to print binary array in reversed order
-    for (j = i - 1; j >= 0; j--)
-      printf("%d", binaryArray[j]);
+  // to print binary array in reversed order
+  for (j = i - 1; j >= 0; j--)
+    printf("%d", binaryArray[j]);
 }
 
 long decimalToBinary(int decimalNum)
