@@ -1,12 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MIN_ELEMENT 1
+#define MAX_ELEMENT 10
+
+void getNumberOfElements(int *numberElement);
+void getValueEachElements(int *arr, int numberElement);
+long sumOddNumbers(int *arr, int numberElement);
+long sumEvenNumbers(int *arr, int numberElement);
+void printSum(long sumEvenNums, long sumOddNums);
+
 /*
  * Function 1
  * Display the screen that prompts users
  * to enter the number of natural numbers.
  */
-void getNumberElement(int *numberElement)
+void getNumberOfElements(int *numberElement)
 {
   do
   {
@@ -16,14 +25,14 @@ void getNumberElement(int *numberElement)
     if (*numberElement > 10 || *numberElement < 1)
       printf("Invalid input. Number of elements must be in the range of 1 to 10\nPlease try again!\n\n");
   }
-  while (*numberElement > 10 || *numberElement < 1);
+  while (*numberElement > MAX_ELEMENT || *numberElement < MIN_ELEMENT);
 }
 
 /*
  * Function 2
  * Prompt users to input natural numbers
  */
-void getValueElement(int *arr, int numberElement)
+void getValueEachElements(int *arr, int numberElement)
 {
   int i;
 
@@ -84,18 +93,31 @@ int main()
 
   printf("Sum Even Odd program\n");
 
-  getNumberElement(&numberElement);
+  // get the number of elements from user input
+  getNumberOfElements(&numberElement);
 
+  // dynamic allocation for arr[]
   int *arr = (int *)malloc(numberElement * sizeof(int));
 
-  getValueElement(arr, numberElement);
+  if (arr == NULL)
+  {
+    printf("\nMemory allocation failed for arr\n");
+    return EXIT_FAILURE;
+  }
 
+  // get the value of each elements in arr[]
+  getValueEachElements(arr, numberElement);
+
+
+  // calculate the sum of even numbers and odd numbers in arr[]
   long sumEvenNum = sumEvenNumbers(arr, numberElement);
   long sumOddNum = sumOddNumbers(arr, numberElement);
 
+  // print out the result to the screen
   printSum(sumEvenNum, sumOddNum);
 
+  // free memory for arr[]
   free(arr);
 
-  return 0;
+  return EXIT_SUCCESS;
 }
