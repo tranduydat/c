@@ -1,59 +1,105 @@
 #include <stdio.h>
 #include <math.h>
-#include <conio.h>
+#include <string.h>
+#include <ctype.h>
 
-void convertDecBin(int decimalNum)
+#define INIT_SIZE_ARRAY 64
+#define INIT_LENGTH_STRING 100
+
+/*
+ * Function 1
+ * Display a screen to prompt user to input a positive decimal number
+ */
+int isNumber(char *userInput)
 {
-  // create an array to store binary value
-  int binaryArray[64];
+  int strLength = strlen(userInput);
+  int i;
 
-  int i = 0, j;
-  while (decimalNum != 0)
-  {
-    // to store remainder in binary array
-    binaryArray[i] = decimalNum % 2;
-    decimalNum = decimalNum / 2;
-    i++;
-  }
-
-  // to print binary array in reversed order
-  for (j = i - 1; j >= 0; j--)
-    printf("%d", binaryArray[j]);
+  for (i = 0; i < strLength; i++)
+    if (isdigit(userInput[i]) == 0)
+      return 0;
+  return 1;
 }
 
-long decimalToBinary(int decimalNum)
+void getUserInput(char **userInput)
 {
-  long binaryNum = 0;
-  int remainder, temp = 1;
+  do
+  {
+    printf("Convert Decimal to Binary program\n");
+    printf("\tEnter a positive number: ");
+    gets(*userInput);
+    // scanf("%d", &(*inputDecimalNum));
+    printf("%s", userInput);
 
-  while (decimalNum!=0)
+    if (isNumber(userInput) == 0)
+      printf("\n Please enter a number (eg. 12).\n");
+  }
+  while (isNumber(userInput) == 0);
+
+  int userInputLength = strlen(userInput);
+
+  *userInput = (char *)realloc(*userInput, userInputLength * sizeof(char));
+}
+
+/*
+ * Function 2
+ * Convert decimal to binary
+ */
+long convertDecBinary(char *userInput)
+{
+  char *binaryArr;
+  int remainder, i = 0, numberOfDigit = 0;
+  int decimalNum = atoi(userInput);
+  // dynamic allocation for binaryArr
+  binaryArr = (char *)malloc(INIT_SIZE_ARRAY * sizeof(char));
+
+  while (decimalNum != 0)
   {
     remainder = decimalNum % 2;
+
+    binaryArr[i] = remainder;
+
     decimalNum = decimalNum / 2;
-    binaryNum = binaryNum + remainder * temp;
-    temp = temp * 10;
   }
+
+  int binaryArrLength = strlen(binaryArr);
+
+  binaryArr = (char *)realloc(binaryArr, binaryArrLength * sizeof(char));
+
+  // to reverse string
+  strrev(binaryArr);
+
+  free(binaryArr);
+
+  // to convert char to int
+  long binaryNum = atoi(binaryArr);
 
   return binaryNum;
 }
 
+/*
+ * Function 3
+ * Output bits stored in the array to the screen.
+ */
+void showOutput(long binaryNum)
+{
+  printf("\tBinary number: %ld\n", binaryNum);
+}
+
 int main()
 {
-  int decimalNum, c;
+  int decimalNum, isContinue = 1;
+  char *userInput;
+  long binaryNum;
 
-  do
-  {
-    printf("Convert Decimal to Binary program");
-    printf("\nEnter a positive Number: ");
-    scanf("%d", &decimalNum);
-    printf("\nBinary Number: %ld", decimalToBinary(decimalNum));
-    printf("\nSecond test:\n");
-    convertDecBin(decimalNum);
+  userInput = (char *)malloc(INIT_LENGTH_STRING * sizeof(char));
 
-    printf("\nPress any key to do another conversion\n");
-    c = getch();
-  }
-  while (c != 0);
+  getUserInput(&userInput);
+  printf("%d", userInput);
+  binaryNum = convertDecBinary(userInput);
+  showOutput(binaryNum);
+
+  free(userInput);
 
   return 0;
 }

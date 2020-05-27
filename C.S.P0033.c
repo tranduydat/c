@@ -32,7 +32,7 @@ void getNumberElement(int *inputArr, int *lengthArr)
 void getEachElementValue(int *inputArr, int lengthArr)
 {
   int i;
-  
+
   for (i = 0; i < lengthArr; i++)
   {
     printf("\tEnter an integer: ");
