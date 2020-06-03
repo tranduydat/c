@@ -1,164 +1,139 @@
-/*
- * File:   main.c
+/**
+ * C.S.P0007
+ * Remove unnecessary blank in a string 
+ * 
  * Author: Tran Duy Dat (HE140517)
- * Description: Remove unnecessary blank in string
- * Status: DONE!
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-#define INIT_LENGTH_STRING 500 // character unit
+#define INIT_LENGTH_STRING 200
 
-void getUserInput(char *str);
-char *removeBlankStr(char *str);
-void displayStr(char *str);
-void askContinue(bool *isContinue);
-
-int main()
-{
-    // create bool isContinue to get user choice either to rerun program or not
-    bool isContinue = false;
-
-    char *str;
-
-    do
-    {
-        str = (char *)malloc(INIT_LENGTH_STRING * sizeof(char));
-
-        if (str == NULL)
-        {
-            printf("Memory allocation for string str failed!");
-            return -1;
-        }
-
-        getUserInput(str);
-        displayStr(str);
-        askContinue(&isContinue);
-
-        free(str);
-    }
-    while (isContinue == true);
-
-    return 0;
-}
-
-/**
- * Step 1
- * ------
- *  Enter an string, do not allow entering special characters
- *  such those @, #, !, [, ], {, }, (, )
- * @param str
+/*
+ * Check valid user input
  */
-
-void getUserInput(char *str)
-{
-    int i, j;
-    bool checkValidInput;
-
-    // checkStr
+int checkValid(char *str, size_t *strLength) {
+    // list of invalid characters
     char checkStr[] = {'@', '#', '!', '[', ']', '{', '}', '(', ')'};
 
-    do
-    {
-        // reset checkValidInput = true when rerun this block code
-        checkValidInput = true;
+    // i for str, j for checkStr
+    int i, j;
 
-        printf("Please enter a string: ");
-        fgets(str, INIT_LENGTH_STRING, stdin);
-
-        // get the length of string str
-        int strLength = strlen(str);
-
-        str = (char *)realloc(str, strLength * sizeof(int));
-
-        // checking user input, expect 8 special characters
-        // in checkStr[]
-        for (i = 0; i < strLength - 1; i++)
-            for (j = 0; j <= 8; j++)
-                if (str[i] == checkStr[j])
-                    checkValidInput = false;
-
-        if (checkValidInput == false)
-            printf("We don't allow enter special characters such as @, #, !, [, ], {, }, (, )\nPlease try again!\n");
-    }
-    while (checkValidInput == false);
+    *strLength = strlen(str);
+    
+    // if user entered nothing (just enter)
+    if (*strLength == 1)
+        return 0;
+    
+    // browsing all characters in str
+    for (i = 0; i < *strLength - 1; i++)
+        // browsing all characters in checkStr
+        for (j = 0; j <= 8; j++)
+            if (str[i] == checkStr[j])
+                return 0;
+    return 1;
 }
 
-/**
- * Step 2
- * ------
- *  Removing all unnecessary blank in the string
- */
-
-char *removeBlankStr(char *str)
-{
-    // i for str
-    // j for newStr
-    int i = 0, j = 0;
-
-    // get the length of the string str
-    int strLength = strlen(str);
-
-    // dynamic allocation for newStr to store removed blank space string
-    char *newStr = (char *)malloc(strLength * sizeof(char));
-
-    while (str[i] != 0)
-    {
-        if (str[i] == ' ')
-        {
-            // just keep one blank space, then pass it to newStr
-            newStr[j] = ' ';
-            j++;
-
-            // skip all consecutive space
-            while (str[i] == ' ')
-                i++;
-        }
-
-        // pass the character on str to newStr (except space character)
-        newStr[j] = str[i];
-
-        i++;
-        j++;
+void checkMemAllocation(char *str) {
+    if (str == NULL) {
+        fprintf(stderr, "Memory allocation failed!\n");
+        exit(-2);
     }
+}
 
-    // NULL terminate newStr
+/*
+ * Enter an string
+ */
+void getInput(char **str) {
+    // storing the length of str
+    size_t strLength;
+
+    *str = (char *) malloc(INIT_LENGTH_STRING * sizeof (char));
+    checkMemAllocation(*str);
+
+    // verifying input
+    do {
+        printf("Please enter a string: ");
+        fflush(stdin);
+        fgets(*str, INIT_LENGTH_STRING, stdin);
+
+        // check special characters and empty line
+        if (checkValid(*str, &strLength) == 0)
+            printf("Invalid input. We don't allow enter special characters such as @, #, !, [, ], {, }, (, ) or leave an empty line\nPlease try again!\n\n");
+    } while (checkValid(*str, &strLength) == 0);
+
+    *str = (char *) realloc(*str, strLength * sizeof (char));
+    checkMemAllocation(*str);
+}
+
+/*
+ * Remove all unnecessary blank in the string 
+ */
+void removeBlankStr(char *str, char **trimStr) {
+    size_t strLength = strlen(str);
+
+    char *newStr = (char *) malloc(strLength * sizeof (char));
+    checkMemAllocation(newStr);
+
+    // i for str, j for trimStr
+    int i = 0, j = 0;
+    // finding and trimming unnecessary blank character
+    while (str[i] != '\0') {
+        if (!(str[i] == ' ' && str[i + 1] == ' ')) {
+            newStr[j] = str[i];
+            j++;
+        }
+        i++;
+    }
+    // ending trimmed string with NULL character
     newStr[j] = '\0';
 
-    return newStr;
+    size_t trimStrLength = strlen(newStr);
+    newStr = (char *) realloc(newStr, trimStrLength * sizeof (char));
+    checkMemAllocation(newStr);
+
+    *trimStr = (char *) malloc(trimStrLength * sizeof (char));
+
+    // copying newStr -> trimStr
+    strcpy(*trimStr, newStr);
+
+    free(newStr);
 }
 
-/**
- * Step 3
- * ------
- *  Display the string on the screen
- * @param str
- */
-void displayStr(char *str)
-{
-    printf("The string after removing: %s\n", removeBlankStr(str));
+void printResult(char *trimStr) {
+    printf("The string after removing: %s", trimStr);
 }
 
-/**
- * Step 4
- * ------
- *  Ask user either to rerun program or not
- * @param isContinue
- */
-void askContinue(bool *isContinue)
-{
+int askContinue(short *isContinue) {
     char userChoice;
 
     printf("Do you wish to continue? Y/N ");
+    fflush(stdin);
     scanf("%c", &userChoice);
-    getchar();
-    // or %*c
 
+    // if press 'y' or 'Y', then continue
     if (userChoice == 'y' || userChoice == 'Y')
-        *isContinue = true;
+        *isContinue = 1;
+        // otherwise, exit
     else
-        *isContinue = false;
+        *isContinue = 0;
+}
+
+int main() {
+    char *str;
+    char *trimStr;
+    short isContinue;
+
+    do {
+        getInput(&str);
+        removeBlankStr(str, &trimStr);
+        printResult(trimStr);
+        askContinue(&isContinue);
+
+        free(trimStr);
+        free(str);
+    } while (isContinue == 1);
+
+    return EXIT_SUCCESS;
 }
