@@ -2,7 +2,6 @@
  * Assignment:      C.S.P0030
  * Requirement:     Addition of odd/even numbers.
  * Author:          Tran Duy Dat (HE140517)
- * LOC:             44
  */
 
 #include <stdio.h>
@@ -20,15 +19,15 @@ void getNumElements(size_t *numElements) {
     short isValid;      /* variable to store the return of scanf() */
 
     printf("Sum Even Odd program\n");
-    
+
     /* get and check validity of the number of elements from user input */
     while (1) {
         printf("Enter a number of element n=");
         fflush(stdin);
         isValid = scanf("%zu", numElements);
 
-        /* to check input, which should be a natural number, less than MAX_ELEMENT
-         * and larger than MIN_ELEMENT */
+        /* to check input, which should be a natural number
+         * less than MAX_ELEMENT and larger than MIN_ELEMENT */
         if (isValid != 1 || *numElements > MAX_ELEMENT || *numElements < MIN_ELEMENT)
             printf("\nInvalid input!\n- This value should be a natural number.\n- The number must be in the range from %d to %d\n\n", MIN_ELEMENT, MAX_ELEMENT);
         else
@@ -40,10 +39,18 @@ void getNumElements(size_t *numElements) {
  * Function 2
  * Prompting user to enter each element value
  */
-void getElementVal(int *arr, size_t numElements) {
+int* getElementVal(size_t numElements) {
     short isValid;      /* variable to store the return of scanf() */
     int i;              /* number for the index of array arr */
-    
+
+    /* memory allocation for arr, with the length equal
+     * to the number of elements (numElements) */
+    int *arr = (int *) malloc(sizeof (int) * numElements);
+    if (arr == NULL) {
+        fprintf(stderr, "Memory allocation failed for arr in getElementVal()\n");
+        exit(-2);
+    }
+
     printf("Input elements:\n");
     /* get and store all the entered number from user */
     for (i = 0; i < numElements; i++) {
@@ -60,6 +67,8 @@ void getElementVal(int *arr, size_t numElements) {
                 break;
         }
     }
+
+    return arr;
 }
 
 /*
@@ -87,19 +96,16 @@ void printResult(unsigned int sumEven, unsigned int sumOdd) {
 }
 
 int main() {
-    size_t numElements;          /* size of array entered from user input */
-    int *arr;                    /* array of numbers from user input */
-    unsigned int sumEven = 0;    /* number of sum all EVEN numbers */
-    unsigned int sumOdd = 0;     /* number of sum of all ODD numbers */
+    size_t numElements;         /* size of array entered from user input */
+    int *arr = NULL;            /* array of numbers from user input */
+    unsigned int sumEven = 0;   /* number of sum all EVEN numbers */
+    unsigned int sumOdd = 0;    /* number of sum of all ODD numbers */
 
     /* prompting user to enter the number of elements in array */
     getNumElements(&numElements);
 
-    /* allocating memory for arr, with the number of elements equal to numElements */
-    arr = (int *) malloc(sizeof (int) * numElements);
-
     /* to prompt user to enter the value of each element in array */
-    getElementVal(arr, numElements);
+    arr = getElementVal(numElements);
 
     /* to sum all the value either even or odd elements in array */
     sumOfElements(arr, numElements, &sumEven, &sumOdd);

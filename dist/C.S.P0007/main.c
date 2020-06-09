@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INIT_LENGTH_STRING 200  /* character unit */
+#define INIT_LENGTH_STRING 200  // character unit
 
 /*
  *  Checking validity of string str (user input)
@@ -74,39 +74,53 @@ void getInput(char **str) {
 /*
  *  Remove all unnecessary blank in the string
  */
-void removeBlankStr(char *str, char **trimStr) {
+void removeBlankStr(char **str, char **trimStr) {
     // get the length of string str
-    size_t strLength = strlen(str);
+    size_t strLength = strlen(*str);
 
     // init temporary string newStr to store raw one
-    char *newStr = (char *) malloc(strLength * sizeof (char));
-    checkMemAllocation(newStr);
+    // char *newStr = (char *) malloc(strLength * sizeof (char));
+    *trimStr = (char *) malloc(strLength * sizeof (char));
+    //checkMemAllocation(newStr);
+    checkMemAllocation(*trimStr);
 
     // i for str, j for trimStr
     int i = 0, j = 0;
     // finding and trimming unnecessary blank character
-    while (str[i] != '\0') {
-        if (!(str[i] == ' ' && str[i + 1] == ' ')) {
-            newStr[j] = str[i];
+    while (*str[i] != '\0') {
+        if (!(*str[i] == ' ' && *str[i + 1] == ' ')) {
+            /*
+                        newStr[j] = str[i];
+             */
+            *trimStr[j] = &(*str[i]);
             j++;
         }
         i++;
     }
     // ending trimmed string with NULL character
-    newStr[j] = '\0';
+    /*
+        newStr[j] = '\0';
+     */
+    *trimStr[j] = '\0';
 
-    size_t trimStrLength = strlen(newStr);
-    newStr = (char *) realloc(newStr, trimStrLength * sizeof (char));
-    checkMemAllocation(newStr);
+    size_t trimStrLength = strlen(*trimStr);
+    /*
+        newStr = (char *) realloc(newStr, trimStrLength * sizeof (char));
+        checkMemAllocation(newStr);
+     */
 
-    *trimStr = (char *) malloc(trimStrLength * sizeof (char));
-    checkMemAllocation(newStr);
+    *trimStr = (char *) realloc(*trimStr, trimStrLength * sizeof (char));
+    checkMemAllocation(*trimStr);
 
     // copying newStr to trimStr
-    strcpy(*trimStr, newStr);
+    /*
+        strcpy(*trimStr, newStr);
+     */
 
     // free heap memory for newStr
-    free(newStr);
+    /*
+        free(newStr);
+     */
 }
 
 /*
@@ -134,14 +148,14 @@ void askContinue() {
 }
 
 int main() {
-    char *str;      // string of user input
-    char *trimStr;  // string for storing removed blank
+    char *str; // string of user input
+    char *trimStr; // string for storing removed blank
 
     // prompting user to enter a string, then check validity
     getInput(&str);
 
     // removing unnecessary blank in str, then pass it to trimStr
-    removeBlankStr(str, &trimStr);
+    removeBlankStr(&str, &trimStr);
 
     // printing removed blank string
     printResult(trimStr);
